@@ -421,5 +421,29 @@ kopwand('binnen_wand_voor', zFi + LIN / 2, [[dX0, dX1, 0, DOOR_H]]);
   head.name = 'figuur_hoofd'; head.position.set(px, 1.73, pz); model.add(head);
 }
 
+// ---- oriëntatielabels op het maaiveld ----------------------------------
+function grondLabel(name, text, z, flip) {
+  const c = document.createElement('canvas');
+  c.width = 1024; c.height = 192;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = '#3a3d40';
+  ctx.font = '300 118px "Helvetica Neue", Helvetica, Arial, sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  if ('letterSpacing' in ctx) ctx.letterSpacing = '28px';
+  ctx.fillText(text, 512 + 14, 100);
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 8;
+  const mat = new THREE.MeshBasicMaterial({ name: `label_${name}`, map: tex, transparent: true, depthWrite: false });
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 2.6 * 192 / 1024), mat);
+  m.name = `label_${name}`;
+  m.rotation.set(-Math.PI / 2, 0, flip ? Math.PI : 0);
+  m.position.set(0, -0.14 + 0.01, z);
+  m.renderOrder = 10;
+  model.add(m);
+}
+grondLabel('voorkant', 'VOORKANT', zF - 1.0, true);
+grondLabel('achterkant', 'ACHTERKANT', zB + 1.0, false);
+
 model.position.y = 0.14; // onderkant plaat op y = 0
 stage.setObject(model);
